@@ -21,3 +21,25 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
         'remember_token' => str_random(10),
     ];
 });
+
+$factory->define(App\Task::class, function (Faker\Generator $faker) {
+    return [
+        'body' =>  $faker->sentence(10) ,
+        'description' =>  $faker->text ,
+    ];
+});
+
+$factory->define(App\Workflow::class, function (Faker\Generator $faker) {
+    return [
+        'name' =>  $faker->sentence(10) ,
+        'description' =>  $faker->text ,
+    ];
+});
+
+$factory->define(App\Step::class, function (Faker\Generator $faker) {
+    return [
+        'name' =>  $faker->sentence(10) ,
+        'description' =>  $faker->text ,
+    ];
+});
+

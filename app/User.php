@@ -26,4 +26,20 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    /**
+    * Get all workflows belonging to a user.
+    */
+    public function workflows()
+    {
+        return $this->hasMany('App\Workflow');
+    }
+
+    /**
+    * Get all processes belonging to a user.
+    */
+    public function processes()
+    {
+        return $this->hasMany('App\Process');
+    }
 }

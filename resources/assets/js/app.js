@@ -13,8 +13,16 @@ require('./bootstrap');
  * the application, or feel free to tweak this setup for your needs.
  */
 
-Vue.component('example', require('./components/Example.vue'));
+// Vue.component('example', require('./components/Example.vue'));
 
-const app = new Vue({
-    el: 'body'
-});
+// Vue.component('process', require('./components/Process.vue'));
+// Vue.component('add-activity', require('./components/Process/ActivityAddForm.vue'));
+
+// var app2 = new Vue({
+//     el: '#app',
+
+//     data: {
+//         seen: false,
+//         process: {name: 'Create Process', description: ''},
+//     }
+// });
