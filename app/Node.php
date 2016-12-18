@@ -8,8 +8,6 @@ class Node extends Model
 {
     protected $fillable = ['process_id', 'branch', 'position', 'type'];
 
-    public $bumbum = "boo boo";
-
     /** 
     * * Get the process for the node  
     * */
@@ -26,6 +24,24 @@ class Node extends Model
         return $this->morphTo();
     }
 
+    /**
+    * Get the branches for this node
+    */
+    public function branch()
+    {
+        return $this->belongsTo('App\Branch');
+    }
+
+    /**
+    * Return nodeable type
+    */
+    public function getTypeAttribute()
+    {
+        return array_last(explode("\\", $this->nodeable_type));
+    }
+
+    // This is probably redundant now that I'm using a Branch model
+    // to manage branches.
     public function getBranch($process)
     {
         if (!$process->nodes->count()) {
@@ -49,16 +65,7 @@ class Node extends Model
     */
     public function child()
     {
-        if ($this->nodeable_type == "App\\Event") {
-            $this->type = "Event";
-        }
-
-        if ($this->nodeable_type == "App\\Activity") {
-            $this->type = "Activity";
-        }
-
         if ($this->nodeable_type == "App\\Gate") {
-            $this->type = "Gate";
             $this->nodeable->options = \App\GateOption::where('gate_id', $this->nodeable->id)->get();
         }
 

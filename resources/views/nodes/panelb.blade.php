@@ -11,7 +11,7 @@
         </div>
         <div class="panel-footer">
             <span class="label label-default">Node ID {{ $nodeB->id }}</span>
-            <span class="label label-default">Branch {{ $nodeB->branch }}</span>
+            <span class="label label-default">Branch {{ $nodeB->branch->id }}</span>
             <span class="label label-default">Position {{ $nodeB->position }}</span>
             <span class="label label-default">{{ $nodeB->nodeable_type }}</span>
         </div>

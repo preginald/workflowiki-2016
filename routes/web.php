@@ -50,6 +50,10 @@ Route::post('/nodes/{id}/gateoptions', 'GateOptionController@store');
 Route::get('/gates/{id}/activities/create', 'GateActivityController@create');
 Route::post('/gates/{id}/activities', 'GateActivityController@store');
 
+Route::get('/options/{id}/activities/create', 'OptionActivityController@create');
+Route::post('/options/{id}/activities', 'OptionActivityController@store');
+
+
 Route::group(['prefix' => 'api/v1'], function(){
     Route::get('processes', function(){
         return App\Process::all();

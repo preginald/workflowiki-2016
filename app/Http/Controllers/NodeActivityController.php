@@ -8,6 +8,7 @@ use App\Http\Requests;
 
 use App\Process;
 use App\Node;
+use App\Branch;
 use App\Gate;
 use App\Activity;
 
@@ -31,17 +32,11 @@ class NodeActivityController extends Controller
     public function create($id)
     {
         $type = 'nodes';
-        $node = Node::with('process')->find($id);
+        $node = Node::with('process', 'branch.option')->find($id);
+        $gateOption = $node->branch->option;
+        $process = Process::with('user', 'nodes.nodeable')->findOrFail($node->process_id);
 
-        $process = Process::with('user', 'nodes')->findOrFail($node->process_id);
-
-        foreach ($process->nodes as $node) {
-            if ($node->type == "Event") {
-               $node->event = \App\Event::where('node_id', $node->id)->get(); 
-            }
-        }
-
-        return view('activities.create')->with(compact('process','id', 'type'));
+        return view('activities.create')->with(compact('process', 'node', 'gateOption', 'id', 'type'));
     }
 
     /**
@@ -56,11 +51,11 @@ class NodeActivityController extends Controller
 
         $process = Process::with('user', 'nodes.nodeable')->findOrFail($node->process_id);
 
-        foreach ($process->nodes as $node) {
-            if ($node->type == "Event") {
-               $node->event = \App\Event::where('node_id', $node->id)->get(); 
-            }
-        }
+        /* foreach ($process->nodes as $node) { */
+        /*     if ($node->type == "Event") { */
+        /*        $node->event = \App\Event::where('node_id', $node->id)->get(); */ 
+        /*     } */
+        /* } */
 
         $options = $process->nodes
             ->where('branch','<>', $node->branch)
@@ -81,8 +76,6 @@ class NodeActivityController extends Controller
     {
         $previousNode = Node::find($id);
 
-
-
         // save activity
         $activity = new Activity;
         $activity->type_id = $request->type_id;
@@ -93,7 +86,7 @@ class NodeActivityController extends Controller
         // save node
         $node = new Node;
         $node->process_id = $previousNode->process_id;
-        $node->branch = $previousNode->branch;
+        $node->branch_id = $previousNode->branch_id;
         $node->position = ++ $previousNode->position;
 
         $activity->node()->save($node);
@@ -110,10 +103,17 @@ class NodeActivityController extends Controller
     public function linkStore(Request $request, $id)
     {
         $previousNode = Node::find($id);
+        $previousBranch = Branch::find($previousNode->branch_id);
+        $splitBranch = Branch::where('node_out', $previousBranch->node_in)->first();
 
         $targetNode = Node::with('nodeable')->find($request->id);
+        $targetBranch = Branch::find($targetNode->branch_id);
 
-        $newBranch = 1 + Node::where('process_id', $previousNode->process_id)->max('branch');
+        // create new branch and node_in will be the merge gate node
+        $branch = new Branch;
+        $branch->node_in = 0;
+        $branch->node_out = 0;
+        $branch->save();
 
         // create new merge gate
         $gate = new Gate;
@@ -123,14 +123,26 @@ class NodeActivityController extends Controller
         // save node
         $node = new Node;
         $node->process_id = $targetNode->process_id;
-        $node->branch = $newBranch;
+        $node->branch_id = $branch->id;
         $node->position = 1;
 
         $gate->node()->save($node);
 
+        // update branch node_in with new node->id
+        $branch->node_in = $node->id;
+        $branch->save();
+
+        // update previousBranch->node_out with new node->id
+        $previousBranch->node_out = $node->id;
+        $previousBranch->save();
+
+        // update targetNode's Branch->node_out with node->id
+        $targetBranch->node_out = $node->id;
+        $targetBranch->save();
+
 
         // move targetNode to new branch
-        $targetNode->branch = $node->branch;  
+        $targetNode->branch_id = $branch->id;  
         $targetNode->position = 2;
         $targetNode->save();
 

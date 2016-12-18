@@ -13,4 +13,3 @@
         <span class="label label-default">{{ $node->nodeable_type }}</span>
     </div>
 </div>
-

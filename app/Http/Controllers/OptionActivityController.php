@@ -4,27 +4,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests\EventRequest;
+use App\Http\Requests;
 
 use App\Process;
-use App\Branch;
 use App\Event;
 
-class EventController extends Controller
+class OptionActivityController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth')->except('index', 'show');
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
     }
 
     /**
@@ -37,8 +26,7 @@ class EventController extends Controller
         $process = Process::with('user', 'nodes')->findOrFail($id);
 
         // Check if process has start event already
-        $types = ($process->nodes) ? ['1' => 'Start'] : ['2' => 'End'];
-
+        $types = ['2' => 'End'];
 
         return view('events.create')->with(compact('process', 'types'));
     }
@@ -49,35 +37,9 @@ class EventController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(EventRequest $request, $id)
+    public function store(Request $request, $id)
     {
-        $process = Process::with('nodes')->findOrFail($id);
-
-        // create event
-        $event = new Event;
-        $event->type_id = $request->type_id;
-        $event->name = $request->name;
-        $event->description = $request->description;
-        $event->save(); 
-
-        // create branch
-        $branch = new Branch;
-        $branch->node_in = 0;
-        $branch->node_out = 0;
-        $branch->save();
-        
-        // create node   
-        $node = new \App\Node;
-        $node->process_id = $process->id;
-        $node->branch_id = $branch->id;
-        $node->position = $node->getPosition($process);
-
-        $event->node()->save($node);
-
-        // update branch's node_in_id with newly create node id
-        $branch->update(['node_in' => $node->id]);
-
-        return redirect()->action('ProcessController@show', ['id' => $process->id]);
+        return $request->all();
     }
 
     /**

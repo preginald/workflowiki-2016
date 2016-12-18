@@ -61,22 +61,27 @@ class ProcessController extends Controller
     {
         $branch = 0;
         $process = Process::with('user')->findOrFail($id);
-        $nodes = Node::with('nodeable')
+        $nodes = Node::with('branch.option', 'nodeable')
             ->where('process_id', $id)
             /* ->where('branch', 0) */
-            ->orderBy('position', 'asc')
+            /* ->orderBy('position', 'asc') */
             ->get();
 
-        foreach ($nodes as $node) {
-            $node = $node->child(); 
-        }
+        /* foreach ($nodes as $node) { */
+        /*     $node = $node->child(); */ 
+        /* } */
+
 
         $process->startNode = $process->startNode($nodes);
         $process->endNode = $process->endNode($nodes);
 
-        return $nodes;
+        /* return $nodes->groupBy('branch_id'); */
 
-        return view('processes.show')->with(compact('process', 'nodes'));
+        /* return $nodes; */
+
+        /* return view('processes.show_v1')->with(compact('process', 'nodes')); */
+        return view('processes.show_v2')->with(compact('process', 'nodes'));
+        /* return view('processes.show')->with(compact('process', 'nodes')); */
     }
 
     /**

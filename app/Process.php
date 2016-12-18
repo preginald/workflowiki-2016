@@ -26,11 +26,18 @@ class Process extends Model
     }
 
     /**
+    * Get branches for the process
+    */
+    public function branches()
+    {
+        return $this->hasManyThrough('App\Branch', 'App\Node');
+    }
+    /**
     * Get start node for the process
     */
     public function startNode($nodes)
     {
-        return $nodes->where('nodeable_type', 'App\\Event')->where('nodeable.type_id', 1); 
+        return $nodes->where('nodeable_type', 'App\\Event')->where('nodeable.type_id', 1)->first(); 
     }
 
     /**

@@ -15,9 +15,38 @@
 
         <hr />
             @if($nodes->count())
-                @foreach($nodes->sortBy('position') as $node)
+                {{-- Render first branch --}}
+                <?php $branch_id = $process->startNode->branch_id ?> 
+                @foreach($nodes->where('branch_id', $process->startNode->branch_id)->where('nodeable_type', '<>', 'App\\Gate')->sortBy('position') as $node)
                     @include('nodes.panel') 
                 @endforeach
+
+                @foreach($nodes->where('branch_id', $process->startNode->branch_id)->where('nodeable_type', 'App\\Gate')->sortBy('position') as $node)
+                    <div class="row">
+                        @foreach($node->nodeable->options as $option)
+                            @include('nodes.branch') 
+                        @endforeach
+                    </div>
+                @endforeach
+                
+                {{-- Render remaining branches --}}
+                @foreach($nodes->where('branch_id', '<>', $process->startNode->branch_id)->where('nodeable_type', 'App\\Gate')->sortBy('position') as $node)
+                    @include('nodes.panel') 
+                    <?php $branch_id = $node->branch_id ?>
+                    <div class="row">
+                        @foreach($node->nodeable->options as $option)
+                            @include('nodes.branch') 
+                        @endforeach
+                    </div>
+                @endforeach
+
+                @if($branch_id != $process->startNode->branch_id) 
+
+                    @foreach($nodes->where('branch_id', $branch_id)->where('nodeable_type', '<>', 'App\\Gate')->sortBy('position') as $node)
+                        @include('nodes.panel')
+                    @endforeach
+
+                @endif
 
             @else
 
@@ -26,8 +55,8 @@
                         <i class="fa fa-plus" aria-hidden="true"></i>
                         Add Start Event
                     </a>
-                @endif
             </div>      
+            @endif
 
     </div>
 @stop

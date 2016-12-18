@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateNodesTable extends Migration
+class CreateBranchesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,11 @@ class CreateNodesTable extends Migration
      */
     public function up()
     {
-        Schema::create('nodes', function (Blueprint $table) {
+        Schema::create('branches', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('process_id')->unsigned();
-            $table->integer('branch_id')->unsigned();
-            $table->integer('position')->unsigned();
-            $table->integer('nodeable_id')->unsigned();
-            $table->string('nodeable_type', 64);
+            $table->integer('node_in')->unsigned();
+            $table->integer('node_out')->unsigned();
+            $table->integer('option_id')->unsigned()->nullable();
             $table->timestamps();
         });
     }
@@ -31,6 +29,6 @@ class CreateNodesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('nodes');
+        Schema::dropIfExists('branches');
     }
 }

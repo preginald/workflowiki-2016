@@ -5,8 +5,8 @@
     <div class="col-md-8">
         <h2>{{ $process->name }}</h2> 
         <p>{{ $process->description }}</p>
-        
         <hr />
+
         <div>
             <h2>Create Activity</h2> 
             <a href="/nodes/{{$id}}/activities/link">Link to an existing activity.</a>
